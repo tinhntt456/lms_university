@@ -69,6 +69,9 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </h1>
                     </div>
                     <div class="row mb-4">
+                           <div class="col-12 mb-3">
+                               <a href="add_student.php" class="btn btn-success"><i class="fas fa-plus"></i> Add Student</a>
+                           </div>
                         <div class="col-12">
                             <div class="card shadow">
                                 <div class="card-header bg-success text-white">
@@ -79,30 +82,29 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <table class="table table-bordered align-middle">
                                             <thead class="table-light">
                                                 <tr>
-                                                    <th>Images</th>
+                                                       <!-- Profile image column removed -->
                                                     <th>Full Name</th>
                                                     <th>Username</th>
                                                     <th>Email</th>
                                                     <th>Course</th>
                                                     <th>Joined At</th>
+                                                       <th>Actions</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <?php if (count($students) > 0): ?>
                                                     <?php foreach ($students as $student): ?>
                                                         <tr>
-                                                            <td>
-                                                                <?php if ($student['profile_image']): ?>
-                                                                    <img src="<?= htmlspecialchars($student['profile_image']) ?>" class="profile-img" alt="Profile">
-                                                                <?php else: ?>
-                                                                    <img src="../assets/img/default_profile.png" class="profile-img" alt="Profile">
-                                                                <?php endif; ?>
-                                                            </td>
+                                                               <!-- Profile image column removed -->
                                                             <td><?= htmlspecialchars($student['first_name'] . ' ' . $student['last_name']) ?></td>
                                                             <td><?= htmlspecialchars($student['username']) ?></td>
                                                             <td><?= htmlspecialchars($student['email']) ?></td>
                                                             <td><?= htmlspecialchars($student['course_title']) ?></td>
                                                             <td><?= htmlspecialchars(date('Y-m-d', strtotime($student['created_at']))) ?></td>
+                                                               <td>
+                                                                   <a href="edit_student.php?id=<?= $student['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
+                                                                   <a href="delete_student.php?id=<?= $student['id'] ?>&course_id=<?= isset($student['course_id']) ? $student['course_id'] : '' ?>&course_title=<?= urlencode($student['course_title']) ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to remove this student from this course?');">Delete</a>
+                                                               </td>
                                                         </tr>
                                                     <?php endforeach; ?>
                                                 <?php else: ?>

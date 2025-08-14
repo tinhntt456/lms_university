@@ -10,16 +10,17 @@ require_once '../config/database.php';
 include '../includes/instructor_navbar.php';
 include '../includes/instructor_sidebar.php';
 
+$database = new Database();
+$conn = $database->getConnection();
+
 $instructor_id = $_SESSION['user_id'];
 $message = '';
 
 // Fetch courses taught by this instructor
 $courses_sql = "SELECT id, title FROM courses WHERE instructor_id = ?";
 $stmt = $conn->prepare($courses_sql);
-$stmt->bind_param('i', $instructor_id);
-$stmt->execute();
-$courses_result = $stmt->get_result();
-$courses = $courses_result->fetch_all(MYSQLI_ASSOC);
+$stmt->execute([$instructor_id]);
+$courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $course_id = intval($_POST['course_id']);
@@ -32,11 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($course_id && $title && $due_date) {
         $sql = "INSERT INTO quizzes (course_id, title, description, time_limit, max_attempts, due_date, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('isssisi', $course_id, $title, $description, $time_limit, $max_attempts, $due_date, $instructor_id);
-        if ($stmt->execute()) {
+        if ($stmt->execute([$course_id, $title, $description, $time_limit, $max_attempts, $due_date, $instructor_id])) {
             $message = '<span style=\"color:green\">Quiz created successfully!</span>';
         } else {
-            $message = '<span style=\"color:red\">Error: ' . htmlspecialchars($stmt->error) . '</span>';
+            $errorInfo = $stmt->errorInfo();
+            $message = '<span style=\"color:red\">Error: ' . htmlspecialchars($errorInfo[2]) . '</span>';
         }
     } else {
         $message = '<span style=\"color:red\">Please fill in all required fields.</span>';

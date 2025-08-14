@@ -13,13 +13,15 @@ $db = $database->getConnection();
 $student_id = $_SESSION['user_id'];
 
 // Get grades using PDO
-$sql = "SELECT g.*, c.title AS course_title, a.title AS assignment_title, q.title AS quiz_title
-        FROM grades g
-        JOIN courses c ON g.course_id = c.id
-        LEFT JOIN assignments a ON g.assignment_id = a.id
-        LEFT JOIN quizzes q ON g.quiz_id = q.id
-        WHERE g.student_id = ?
-        ORDER BY g.graded_at DESC";
+$sql = "SELECT g.*, c.title AS course_title, a.title AS assignment_title, q.title AS quiz_title,
+       s.feedback AS submission_feedback
+    FROM grades g
+    JOIN courses c ON g.course_id = c.id
+    LEFT JOIN assignments a ON g.assignment_id = a.id
+    LEFT JOIN quizzes q ON g.quiz_id = q.id
+    LEFT JOIN submissions s ON s.assignment_id = g.assignment_id AND s.student_id = g.student_id
+    WHERE g.student_id = ?
+    ORDER BY g.graded_at DESC";
 $stmt = $db->prepare($sql);
 $stmt->execute([$student_id]);
 $grades = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -93,7 +95,15 @@ $grades = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     ?>
                                 </td>
                                 <td><?= htmlspecialchars($grade['grade']) ?></td>
-                                <td class="feedback"><?= nl2br(htmlspecialchars($grade['feedback'])) ?></td>
+                                <td class="feedback">
+                                    <?php
+                                    if (!empty($grade['submission_feedback'])) {
+                                        echo nl2br(htmlspecialchars($grade['submission_feedback']));
+                                    } else {
+                                        echo nl2br(htmlspecialchars($grade['feedback']));
+                                    }
+                                    ?>
+                                </td>
                                 <td><?= htmlspecialchars($grade['graded_at']) ?></td>
                             </tr>
                         <?php endforeach; ?>

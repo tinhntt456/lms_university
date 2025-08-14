@@ -81,6 +81,7 @@ $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                                 <a href="course_view.php?id=<?= $course['id'] ?>" class="btn btn-sm btn-outline-primary" title="Xem"><i class="fas fa-eye"></i></a>
                                                                 <a href="course_edit.php?id=<?= $course['id'] ?>" class="btn btn-sm btn-outline-secondary" title="Sửa"><i class="fas fa-edit"></i></a>
                                                                 <a href="course_analytics.php?id=<?= $course['id'] ?>" class="btn btn-sm btn-outline-info" title="Phân tích"><i class="fas fa-chart-bar"></i></a>
+                                                                   <a href="course_delete.php?id=<?= $course['id'] ?>" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this course?');"><i class="fas fa-trash"></i></a>
                                                             </div>
                                                         </td>
                                                     </tr>

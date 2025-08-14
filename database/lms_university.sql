@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 14, 2025 at 06:02 AM
+-- Generation Time: Aug 14, 2025 at 09:38 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -30,9 +30,21 @@ SET time_zone = "+00:00";
 CREATE TABLE `analytics` (
   `id` int(11) NOT NULL,
   `metric_name` varchar(100) NOT NULL,
+  `value` varchar(255) NOT NULL,
   `metric_value` decimal(15,2) NOT NULL,
   `recorded_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `analytics`
+--
+
+INSERT INTO `analytics` (`id`, `metric_name`, `value`, `metric_value`, `recorded_at`) VALUES
+(1, 'Total Students', '120', 0.00, '2025-08-13 17:00:00'),
+(2, 'Active Courses', '8', 0.00, '2025-08-11 17:00:00'),
+(3, 'Assignments Submitted', '45', 0.00, '2025-08-09 17:00:00'),
+(4, 'Quizzes Completed', '32', 0.00, '2025-08-01 17:00:00'),
+(6, 'Total Students', '120', 0.00, '2025-08-13 17:00:00');
 
 -- --------------------------------------------------------
 
@@ -206,18 +218,34 @@ CREATE TABLE `enrollments` (
 --
 
 INSERT INTO `enrollments` (`id`, `student_id`, `course_id`, `enrollment_date`, `status`, `final_grade`) VALUES
-(1, 3, 3, '2025-08-14 02:38:40', 'enrolled', NULL),
-(2, 3, 5, '2025-08-14 02:38:41', 'enrolled', NULL),
-(3, 3, 6, '2025-08-14 02:38:42', 'enrolled', NULL),
-(4, 3, 7, '2025-08-14 02:38:43', 'enrolled', NULL),
-(5, 3, 4, '2025-08-14 02:38:44', 'enrolled', NULL),
-(6, 3, 8, '2025-08-14 02:38:44', 'enrolled', NULL),
-(7, 3, 9, '2025-08-14 02:38:46', 'enrolled', NULL),
-(8, 3, 10, '2025-08-14 02:38:50', 'enrolled', NULL),
-(9, 3, 11, '2025-08-14 02:38:52', 'enrolled', NULL),
-(10, 3, 12, '2025-08-14 02:38:54', 'enrolled', NULL),
-(11, 3, 14, '2025-08-14 02:38:55', 'enrolled', NULL),
-(12, 3, 15, '2025-08-14 02:38:58', 'enrolled', NULL);
+(13, 3, 3, '2025-08-14 04:59:47', 'enrolled', NULL),
+(14, 3, 4, '2025-08-14 04:59:48', 'enrolled', NULL),
+(15, 3, 5, '2025-08-14 04:59:49', 'enrolled', NULL),
+(16, 3, 6, '2025-08-14 04:59:50', 'enrolled', NULL),
+(17, 3, 7, '2025-08-14 04:59:50', 'enrolled', NULL),
+(18, 3, 8, '2025-08-14 04:59:51', 'enrolled', NULL),
+(19, 3, 9, '2025-08-14 04:59:51', 'enrolled', NULL),
+(20, 3, 10, '2025-08-14 04:59:52', 'enrolled', NULL),
+(21, 3, 11, '2025-08-14 04:59:53', 'enrolled', NULL),
+(22, 3, 12, '2025-08-14 04:59:53', 'enrolled', NULL),
+(23, 3, 14, '2025-08-14 04:59:55', 'enrolled', NULL),
+(24, 3, 15, '2025-08-14 04:59:57', 'enrolled', NULL),
+(25, 6, 11, '2025-08-14 05:01:55', 'enrolled', NULL),
+(26, 7, 11, '2025-08-14 05:02:01', 'enrolled', NULL),
+(27, 8, 14, '2025-08-14 05:02:05', 'enrolled', NULL),
+(28, 9, 15, '2025-08-14 05:02:09', 'enrolled', NULL),
+(29, 10, 14, '2025-08-14 05:02:12', 'enrolled', NULL),
+(30, 8, 3, '2025-08-14 07:21:41', 'enrolled', NULL),
+(31, 8, 4, '2025-08-14 07:21:42', 'enrolled', NULL),
+(32, 8, 5, '2025-08-14 07:21:43', 'enrolled', NULL),
+(33, 8, 6, '2025-08-14 07:21:45', 'enrolled', NULL),
+(34, 8, 7, '2025-08-14 07:21:46', 'enrolled', NULL),
+(35, 8, 8, '2025-08-14 07:21:47', 'enrolled', NULL),
+(36, 8, 9, '2025-08-14 07:21:48', 'enrolled', NULL),
+(37, 8, 10, '2025-08-14 07:21:49', 'enrolled', NULL),
+(38, 8, 11, '2025-08-14 07:21:49', 'enrolled', NULL),
+(39, 8, 12, '2025-08-14 07:21:50', 'enrolled', NULL),
+(40, 8, 15, '2025-08-14 07:21:52', 'enrolled', NULL);
 
 -- --------------------------------------------------------
 
@@ -298,11 +326,14 @@ CREATE TABLE `grades` (
 --
 
 INSERT INTO `grades` (`grade_id`, `assignment_id`, `student_id`, `quiz_id`, `course_id`, `grade`, `graded_at`, `feedback`) VALUES
-(1, 6, 3, 0, 11, 100.00, '2025-08-14 03:23:39', ''),
-(2, 7, 3, 0, 11, 90.00, '2025-08-14 03:22:55', ''),
-(3, 8, 3, 0, 11, 100.00, '2025-08-14 03:22:59', ''),
-(4, 9, 3, 0, 11, 80.00, '2025-08-14 03:23:05', ''),
-(5, 10, 3, 0, 11, 70.00, '2025-08-14 03:23:13', '');
+(1, 6, 3, 0, 11, 100.00, '2025-08-14 07:20:20', 'Excellent work! Clear, complete, and well-structured analysis.'),
+(2, 7, 3, 0, 11, 90.00, '2025-08-14 05:18:53', 'Solid plan, but test cases could be more comprehensive.'),
+(3, 8, 3, 0, 11, 100.00, '2025-08-14 05:18:35', 'Good effort, but missing some key features. Please review project requirements.'),
+(4, 9, 3, 0, 11, 80.00, '2025-08-14 05:19:17', 'Well-designed, but a few diagrams need more detail.'),
+(5, 10, 3, 0, 11, 70.00, '2025-08-14 07:24:53', 'Solid plan, but test cases could be more comprehensive.'),
+(6, 9, 8, 0, 11, 20.00, '2025-08-14 07:37:24', 'Excellent work! Clear, complete, and well-structured analysis.'),
+(7, 7, 8, 0, 11, 100.00, '2025-08-14 07:28:36', ''),
+(8, 6, 8, 0, 11, 20.00, '2025-08-14 07:28:52', '');
 
 -- --------------------------------------------------------
 
@@ -404,7 +435,12 @@ INSERT INTO `quiz_attempts` (`id`, `quiz_id`, `student_id`, `attempt_number`, `s
 (2, 5, 3, 1, '2025-08-14 02:39:16', NULL, 0.00, 20.00),
 (3, 2, 3, 1, '2025-08-14 02:39:16', NULL, 0.00, 20.00),
 (4, 3, 3, 1, '2025-08-14 02:39:17', NULL, 0.00, 20.00),
-(5, 4, 3, 1, '2025-08-14 02:39:18', NULL, 0.00, 20.00);
+(5, 4, 3, 1, '2025-08-14 02:39:18', NULL, 0.00, 20.00),
+(6, 6, 8, 1, '2025-08-14 07:22:03', NULL, 0.00, 20.00),
+(7, 5, 8, 1, '2025-08-14 07:22:04', NULL, 0.00, 20.00),
+(8, 2, 8, 1, '2025-08-14 07:22:05', NULL, 0.00, 20.00),
+(9, 3, 8, 1, '2025-08-14 07:22:05', NULL, 0.00, 20.00),
+(10, 4, 8, 1, '2025-08-14 07:22:06', NULL, 0.00, 20.00);
 
 -- --------------------------------------------------------
 
@@ -450,6 +486,17 @@ CREATE TABLE `reports` (
   `file_path` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `reports`
+--
+
+INSERT INTO `reports` (`id`, `report_title`, `report_type`, `generated_by`, `file_path`, `created_at`) VALUES
+(1, 'Course Performance Summary', 'PDF', 2, '../uploads/reports/1755149769_Assignment 1 guidance.docx', '2025-08-14 00:36:09'),
+(2, 'Student Attendance Analysis', 'Excel', 2, '../uploads/reports/1755149802_Assignment 1 guidance.docx', '2025-08-14 00:36:42'),
+(3, 'Assignment Submission Statistics', 'PDF', 2, '../uploads/reports/1755149820_Assignment 1 guidance.docx', '2025-08-14 00:37:00'),
+(4, 'Quiz Score Distribution', 'PDF', 2, '../uploads/reports/1755149833_Assignment 1 guidance.docx', '2025-08-14 00:37:13'),
+(6, 'nstructor Activity Log', 'PDF', 2, '../uploads/reports/1755150010_Assignment 1 guidance.docx', '2025-08-14 00:40:10');
 
 -- --------------------------------------------------------
 
@@ -566,7 +613,12 @@ INSERT INTO `submissions` (`id`, `assignment_id`, `student_id`, `file_url`, `sub
 (2, 9, 3, 'uploads/dummy.pdf', '2025-08-14 02:39:06', 80.00, NULL),
 (3, 8, 3, 'uploads/dummy.pdf', '2025-08-14 02:39:07', 100.00, NULL),
 (4, 7, 3, 'uploads/dummy.pdf', '2025-08-14 02:39:08', 90.00, NULL),
-(5, 6, 3, 'uploads/dummy.pdf', '2025-08-14 02:39:09', 100.00, NULL);
+(5, 6, 3, 'uploads/dummy.pdf', '2025-08-14 02:39:09', 100.00, NULL),
+(6, 10, 8, 'uploads/dummy.pdf', '2025-08-14 07:21:56', NULL, NULL),
+(7, 9, 8, 'uploads/dummy.pdf', '2025-08-14 07:21:57', 0.00, 'Excellent work! Clear, complete, and well-structured analysis.'),
+(8, 8, 8, 'uploads/dummy.pdf', '2025-08-14 07:21:57', NULL, NULL),
+(9, 7, 8, 'uploads/dummy.pdf', '2025-08-14 07:21:58', 100.00, 'Well-designed, but a few diagrams need more detail.'),
+(10, 6, 8, 'uploads/dummy.pdf', '2025-08-14 07:21:58', 20.00, 'Good effort, but missing some key features. Please review project requirements.');
 
 -- --------------------------------------------------------
 
@@ -608,7 +660,17 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `first_name`, `last_name`, `role`, `profile_image`, `created_at`, `updated_at`) VALUES
 (1, 'admin', 'admin@university.edu', '$2b$12$OhrHRimaGyqcWAQjqh24n.Dpl6w5mDTSzIZFsHoEeaqRTF/cHIS3O', 'System', 'Administrator', 'admin', NULL, '2025-08-05 07:14:16', '2025-08-05 07:14:16'),
 (2, 'prof_smith', 'smith@university.edu', '$2b$12$.JhV6XAfHFW7o3DYElf3aexPqKv.tSpmqSGppchD/oZ0mF0OqZOGK', 'John', 'Smith', 'instructor', NULL, '2025-08-05 07:14:16', '2025-08-05 07:14:16'),
-(3, 'student1', 'student1@university.edu', '$2b$12$MxObukYWvtSzngM4wR9lDeX1sziYLq50Jh.uEmNJNAloHHVVxltXm', 'Jane', 'Doe', 'student', NULL, '2025-08-05 07:14:16', '2025-08-05 07:14:16');
+(3, 'student1', 'student1@university.edu', '$2b$12$MxObukYWvtSzngM4wR9lDeX1sziYLq50Jh.uEmNJNAloHHVVxltXm', 'Jane', 'Dob', 'student', '', '2025-08-05 07:14:16', '2025-08-14 07:14:19'),
+(6, 'student01', 'alex.jones@example.com', '$2y$10$FnElUp94mBaxIcofRDU4/emwhxYLiqjlX8iVf0e.lpbH4YH0lz7yK', 'Alex', 'Jones', 'student', NULL, '2025-08-14 04:31:58', '2025-08-14 04:31:58'),
+(7, 'student02', 'maria.garcia@example.com', '$2y$10$kqcy5mORu7VJRTWOIQKJcezi0nzv5k4cnPhBdFH6WqUybutwAWA.e', 'Maria', 'Garcia', 'student', NULL, '2025-08-14 04:32:33', '2025-08-14 04:32:33'),
+(8, 'student03', 'li.wei@example.com', '$2y$10$9Pt5dfWiUczCppmp/eDzKOlLjph7MukEEPDBXLWGl9vEF8EBS2NYa', 'Wei', 'Li', 'student', NULL, '2025-08-14 04:33:16', '2025-08-14 04:33:16'),
+(9, 'student04', 'fatima.khan@example.com', '$2y$10$JsHekDYzrBpo./j8Km4HuexXfh4rkU8/S9m4gC4cBgLWocxPF75w2', 'Fatima', 'Khan', 'student', NULL, '2025-08-14 04:33:51', '2025-08-14 04:33:51'),
+(10, 'student05', 'john.smith@example.com', '$2y$10$c7VrCHy5IgvxG3h6gd8Qy.dba87JM.6mRW7vLhAMK4p9x0ETB1NRu', 'John', 'Smith', 'student', NULL, '2025-08-14 04:34:22', '2025-08-14 04:34:22'),
+(11, 'instructor01', 'emily.watson@example.com', '$2y$10$6eKzQR7tZmHnO/GwA0L2nujkO9B6Fk3f4iUfUWrP7X84DuA7AfFmG', 'Emily', 'Watson', 'instructor', NULL, '2025-08-14 04:35:56', '2025-08-14 04:35:56'),
+(12, 'instructor02', 'michael.brown@example.com', '$2y$10$MEnXWlxoMH80yP61fDIn/.wCLaCpRYq2z12TsHNdswXVP45ZTdBmS', 'Michael', 'Brown', 'instructor', NULL, '2025-08-14 04:36:31', '2025-08-14 04:36:31'),
+(13, 'instructor03', 'olivia.martin@example.com', '$2y$10$4hjl2PH9huqXPqdquur5Ke0ZVgqQESCsO751bXAYucrip6u3WQ2PG', 'Olivia', 'Martin', 'instructor', NULL, '2025-08-14 04:37:04', '2025-08-14 04:37:04'),
+(14, 'instructor04', 'daniel.johnson@example.com', '$2y$10$ZCOf2YZIM9WbWjiM4fsW.OONsQUA3G7NNGCyw5JOWu23QqI5e27lS', 'Daniel', 'Johnson', 'instructor', NULL, '2025-08-14 04:37:35', '2025-08-14 04:37:35'),
+(15, 'instructor06', 'sophia.lee@example.com', '$2y$10$XdU5GwyREwy1jf/DzqL9xOC88htG/crDkiTt5nljtgwJZwj6QbkOu', 'Sophia', 'Lee', 'instructor', NULL, '2025-08-14 04:38:14', '2025-08-14 04:38:39');
 
 --
 -- Indexes for dumped tables
@@ -843,7 +905,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `analytics`
 --
 ALTER TABLE `analytics`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `announcements`
@@ -891,7 +953,7 @@ ALTER TABLE `discussions`
 -- AUTO_INCREMENT for table `enrollments`
 --
 ALTER TABLE `enrollments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT for table `forum_categories`
@@ -915,7 +977,7 @@ ALTER TABLE `forum_topics`
 -- AUTO_INCREMENT for table `grades`
 --
 ALTER TABLE `grades`
-  MODIFY `grade_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `grade_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `messages`
@@ -939,7 +1001,7 @@ ALTER TABLE `quiz_answers`
 -- AUTO_INCREMENT for table `quiz_attempts`
 --
 ALTER TABLE `quiz_attempts`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `quiz_questions`
@@ -957,7 +1019,7 @@ ALTER TABLE `quiz_question_options`
 -- AUTO_INCREMENT for table `reports`
 --
 ALTER TABLE `reports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `settings`
@@ -999,7 +1061,7 @@ ALTER TABLE `student_schedule`
 -- AUTO_INCREMENT for table `submissions`
 --
 ALTER TABLE `submissions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `system_logs`
@@ -1011,7 +1073,7 @@ ALTER TABLE `system_logs`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Constraints for dumped tables

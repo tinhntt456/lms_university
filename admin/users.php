@@ -60,7 +60,6 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <thead class="table-light">
                                             <tr>
                                                 <th scope="col">ID</th>
-                                                <th scope="col">Profile Image</th>
                                                 <th scope="col">Username</th>
                                                 <th scope="col">Email</th>
                                                 <th scope="col">Full Name</th>
@@ -73,19 +72,12 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <?php foreach($result as $row): ?>
                                                 <tr>
                                                     <td><?= $row['id'] ?></td>
-                                                    <td>
-                                                        <?php if ($row['profile_image']): ?>
-                                                            <img src="<?= htmlspecialchars($row['profile_image']) ?>" class="profile-img" alt="">
-                                                        <?php else: ?>
-                                                            <img src="../assets/img/default-avatar.png" class="profile-img" alt="">
-                                                        <?php endif; ?>
-                                                    </td>
                                                     <td><?= htmlspecialchars($row['username']) ?></td>
                                                     <td><?= htmlspecialchars($row['email']) ?></td>
                                                     <td><?= htmlspecialchars($row['last_name'] . ' ' . $row['first_name']) ?></td>
                                                     <td><?= ucfirst($row['role']) ?></td>
                                                     <td><?= $row['created_at'] ?></td>
-                                                </tr>
+                                                   </tr>
                                             <?php endforeach; ?>
                                         <?php else: ?>
                                             <tr><td colspan="7" class="text-center">No users found.</td></tr>

@@ -75,7 +75,7 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC);
                 </div>
                 <div class="profile-container">
                     <div class="profile-header">
-                        <img src="<?= $user['profile_image'] ? htmlspecialchars($user['profile_image']) : '../assets/img/default_profile.png' ?>" class="profile-img" alt="Profile">
+                        <!-- Profile image removed -->
                         <div>
                             <h2><?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?></h2>
                             <span>@<?= htmlspecialchars($user['username']) ?> (<?= htmlspecialchars($user['role']) ?>)</span>

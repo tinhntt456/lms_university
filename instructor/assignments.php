@@ -16,7 +16,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'instructor') {
 $instructor_id = $_SESSION['user_id'];
 
 // Fetch assignments created by this instructor
-$sql = "SELECT a.*, c.title AS course_title, c.course_code FROM assignments a JOIN courses c ON a.course_id = c.id WHERE a.created_by = :instructor_id ORDER BY a.created_at DESC";
+$sql = "SELECT a.*, c.title AS course_title, c.course_code, s.feedback FROM assignments a JOIN courses c ON a.course_id = c.id LEFT JOIN submissions s ON s.assignment_id = a.id WHERE a.created_by = :instructor_id ORDER BY a.created_at DESC";
 $stmt = $pdo->prepare($sql);
 $stmt->execute(['instructor_id' => $instructor_id]);
 $assignments = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -67,6 +67,7 @@ $assignments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     <th>Due Date</th>
                                                     <th>Max Points</th>
                                                     <th>Created At</th>
+                                                    <th>Feedback</th>
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
@@ -79,11 +80,12 @@ $assignments = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                         <td><?= date('d/m/Y H:i', strtotime($assignment['due_date'])) ?></td>
                                                         <td><?= $assignment['max_points'] ?></td>
                                                         <td><?= date('d/m/Y', strtotime($assignment['created_at'])) ?></td>
+                                                        <td><?= $assignment['feedback'] ? htmlspecialchars($assignment['feedback']) : '-' ?></td>
                                                         <td>
                                                             <div class="btn-group" role="group">
-                                                                <a href="view_assignment.php?id=<?= $assignment['id'] ?>" class="btn btn-sm btn-outline-primary" title="Xem"><i class="fas fa-eye"></i></a>
-                                                                <a href="edit_assignment.php?id=<?= $assignment['id'] ?>" class="btn btn-sm btn-outline-secondary" title="Sửa"><i class="fas fa-edit"></i></a>
-                                                                <a href="submissions.php?assignment_id=<?= $assignment['id'] ?>" class="btn btn-sm btn-outline-success" title="Nộp bài"><i class="fas fa-file-alt"></i></a>
+                                                                <a href="view_assignment.php?id=<?= $assignment['id'] ?>" class="btn btn-sm btn-outline-primary" title="View"><i class="fas fa-eye"></i></a>
+                                                                <a href="edit_assignment.php?id=<?= $assignment['id'] ?>" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="fas fa-edit"></i></a>
+                                                                <a href="submissions.php?assignment_id=<?= $assignment['id'] ?>" class="btn btn-sm btn-outline-success" title="Submissions"><i class="fas fa-file-alt"></i></a>
                                                                 <a href="delete_assignment.php?id=<?= $assignment['id'] ?>" class="btn btn-sm btn-outline-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this assignment?');"><i class="fas fa-trash"></i></a>
                                                             </div>
                                                         </td>

@@ -22,11 +22,21 @@
                     <i class="fas fa-user-graduate"></i> Students
                 </a>
             </li>
+               <li class="nav-item">
+                   <a class="nav-link" href="../admin/add_student.php">
+                       <i class="fas fa-user-plus"></i> Add Student
+                   </a>
+               </li>
             <li class="nav-item">
                 <a class="nav-link" href="../admin/instructors.php">
                     <i class="fas fa-chalkboard-teacher"></i> Instructors
                 </a>
             </li>
+               <li class="nav-item">
+                   <a class="nav-link" href="../admin/add_instructor.php">
+                       <i class="fas fa-user-plus"></i> Add Instructor
+                   </a>
+               </li>
         </ul>
 
         <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">

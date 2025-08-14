@@ -56,11 +56,11 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <thead class="table-light">
                                             <tr>
                                                 <th scope="col">ID</th>
-                                                <th scope="col">Profile Image</th>
                                                 <th scope="col">Username</th>
                                                 <th scope="col">Email</th>
                                                 <th scope="col">Full Name</th>
                                                 <th scope="col">Created At</th>
+                                                   <th scope="col">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -68,18 +68,15 @@ $students = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                             <?php foreach($students as $row): ?>
                                                 <tr>
                                                     <td><?= $row['id'] ?></td>
-                                                    <td>
-                                                        <?php if ($row['profile_image']): ?>
-                                                            <img src="<?= htmlspecialchars($row['profile_image']) ?>" class="profile-img" alt="">
-                                                        <?php else: ?>
-                                                            <img src="../assets/img/default-avatar.png" class="profile-img" alt="">
-                                                        <?php endif; ?>
-                                                    </td>
                                                     <td><?= htmlspecialchars($row['username']) ?></td>
                                                     <td><?= htmlspecialchars($row['email']) ?></td>
                                                     <td><?= htmlspecialchars($row['last_name'] . ' ' . $row['first_name']) ?></td>
                                                     <td><?= $row['created_at'] ?></td>
-                                                </tr>
+                                                       <td>
+                                                           <a href="edit_student.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
+                                                           <a href="delete_student.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this student?');">Delete</a>
+                                                       </td>
+                                                   </tr>
                                             <?php endforeach; ?>
                                         <?php else: ?>
                                             <tr><td colspan="6" class="text-center">No students found.</td></tr>

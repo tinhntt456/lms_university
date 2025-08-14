@@ -21,12 +21,14 @@ $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Fetch grades for assignments and quizzes in instructor's courses
 $grades_sql = "
-SELECT g.*, CONCAT(u.first_name, ' ', u.last_name) AS student_name, c.title AS course_name, a.title AS assignment_title, q.title AS quiz_title
+SELECT g.*, CONCAT(u.first_name, ' ', u.last_name) AS student_name, c.title AS course_name, a.title AS assignment_title, q.title AS quiz_title,
+       s.feedback AS submission_feedback
 FROM grades g
 JOIN users u ON g.student_id = u.id
 JOIN courses c ON g.course_id = c.id
 LEFT JOIN assignments a ON g.assignment_id = a.id
 LEFT JOIN quizzes q ON g.quiz_id = q.id
+LEFT JOIN submissions s ON s.assignment_id = g.assignment_id AND s.student_id = g.student_id
 WHERE c.instructor_id = :instructor_id
 ORDER BY g.graded_at DESC
 ";
@@ -55,26 +57,30 @@ $grades = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">
-                        <i class="fas fa-marker"></i> Grading
+                            <i class="fas fa-marker"></i> Grading
                     </h1>
                 </div>
                 <div class="row mb-4">
+                       <div class="col-12 mb-3">
+                           <a href="add_grade.php" class="btn btn-success"><i class="fas fa-plus"></i> Add Grade</a>
+                       </div>
                     <div class="col-12">
                         <div class="card shadow">
                             <div class="card-header bg-success text-white">
-                                <i class="fas fa-marker"></i> Grading List
+                                    <i class="fas fa-marker"></i> Grading List
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="table table-bordered align-middle">
                                         <thead class="table-light">
                                             <tr>
-                                                <th>Student</th>
-                                                <th>Course</th>
-                                                <th>Assignment/Quiz</th>
-                                                <th>Grade</th>
-                                                <th>Feedback</th>
-                                                <th>Graded At</th>
+                                                    <th>Student</th>
+                                                    <th>Course</th>
+                                                    <th>Assignment/Quiz</th>
+                                                    <th>Grade</th>
+                                                    <th>Feedback</th>
+                                                    <th>Graded At</th>
+                                                    <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -84,19 +90,31 @@ $grades = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                         <td><?= htmlspecialchars($grade['student_name']) ?></td>
                                                         <td><?= htmlspecialchars($grade['course_name']) ?></td>
                                                         <td>
+                                                                <?php
+                                                                if ($grade['assignment_id']) {
+                                                                    echo 'Assignment: ' . htmlspecialchars($grade['assignment_title']);
+                                                                } elseif ($grade['quiz_id']) {
+                                                                    echo 'Quiz: ' . htmlspecialchars($grade['quiz_title']);
+                                                                } else {
+                                                                    echo '-';
+                                                                }
+                                                                ?>
+                                                        </td>
+                                                        <td><?= htmlspecialchars($grade['grade']) ?></td>
+                                                        <td class="feedback">
                                                             <?php
-                                                            if ($grade['assignment_id']) {
-                                                                echo 'Bài tập: ' . htmlspecialchars($grade['assignment_title']);
-                                                            } elseif ($grade['quiz_id']) {
-                                                                echo 'Bài kiểm tra: ' . htmlspecialchars($grade['quiz_title']);
+                                                            if (!empty($grade['submission_feedback'])) {
+                                                                echo nl2br(htmlspecialchars($grade['submission_feedback']));
                                                             } else {
-                                                                echo '-';
+                                                                echo nl2br(htmlspecialchars($grade['feedback']));
                                                             }
                                                             ?>
                                                         </td>
-                                                        <td><?= htmlspecialchars($grade['grade']) ?></td>
-                                                        <td class="feedback"><?= nl2br(htmlspecialchars($grade['feedback'])) ?></td>
                                                         <td><?= htmlspecialchars($grade['graded_at']) ?></td>
+                                                           <td>
+                                                               <a href="edit_grade.php?id=<?= $grade['grade_id'] ?>" class="btn btn-sm btn-warning">Edit</a>
+                                                               <a href="delete_grade.php?id=<?= $grade['grade_id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this grade?');">Delete</a>
+                                                           </td>
                                                     </tr>
                                                 <?php endforeach; ?>
                                             <?php else: ?>

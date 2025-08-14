@@ -57,6 +57,7 @@ $instructors = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                 <th scope="col">Email</th>
                                                 <th scope="col">Full Name</th>
                                                 <th scope="col">Created At</th>
+                                                   <th scope="col">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -69,6 +70,10 @@ $instructors = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                     <td><?= htmlspecialchars($row['email']) ?></td>
                                                     <td><?= htmlspecialchars($row['last_name'] . ' ' . $row['first_name']) ?></td>
                                                     <td><?= $row['created_at'] ?></td>
+                                                       <td>
+                                                           <a href="edit_instructor.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-warning">Edit</a>
+                                                           <a href="delete_instructor.php?id=<?= $row['id'] ?>" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this instructor?');">Delete</a>
+                                                       </td>
                                                 </tr>
                                             <?php endforeach; ?>
                                         <?php else: ?>

@@ -19,36 +19,37 @@ $db = $database->getConnection();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $submission_id = $_POST['submission_id'];
   $grade = $_POST['grade'];
-  // Update submissions table
-  $stmt = $db->prepare("UPDATE submissions SET grade = ? WHERE id = ?");
-  $stmt->execute([$grade, $submission_id]);
+  $feedback = isset($_POST['feedback']) ? $_POST['feedback'] : '';
+  // Update submissions table with grade and feedback
+  $stmt = $db->prepare("UPDATE submissions SET grade = ?, feedback = ? WHERE id = ?");
+  $stmt->execute([$grade, $feedback, $submission_id]);
 
-  // Lấy thông tin assignment, student, course từ submission
+  // Fetch assignment and student info
   $info_stmt = $db->prepare("SELECT assignment_id, student_id FROM submissions WHERE id = ?");
   $info_stmt->execute([$submission_id]);
   $info = $info_stmt->fetch(PDO::FETCH_ASSOC);
   if ($info) {
     $assignment_id = $info['assignment_id'];
     $student_id = $info['student_id'];
-    // Lấy course_id từ assignment
+    // Fetch course_id from assignment
     $course_stmt = $db->prepare("SELECT course_id FROM assignments WHERE id = ?");
     $course_stmt->execute([$assignment_id]);
     $course_id = $course_stmt->fetchColumn();
-    // Kiểm tra đã có điểm chưa
+    // Check if grade exists
     $check_stmt = $db->prepare("SELECT grade_id FROM grades WHERE student_id = ? AND assignment_id = ?");
     $check_stmt->execute([$student_id, $assignment_id]);
     $grade_id = $check_stmt->fetchColumn();
     if ($grade_id) {
-      // Update điểm
-      $update_stmt = $db->prepare("UPDATE grades SET grade = ?, graded_at = NOW() WHERE grade_id = ?");
-      $update_stmt->execute([$grade, $grade_id]);
+      // Update existing grade
+      $update_stmt = $db->prepare("UPDATE grades SET grade = ?, feedback = ?, graded_at = NOW() WHERE grade_id = ?");
+      $update_stmt->execute([$grade, $feedback, $grade_id]);
     } else {
-      // Insert điểm mới
-      $insert_stmt = $db->prepare("INSERT INTO grades (student_id, course_id, assignment_id, grade, graded_at) VALUES (?, ?, ?, ?, NOW())");
-      $insert_stmt->execute([$student_id, $course_id, $assignment_id, $grade]);
+      // Insert new grade
+      $insert_stmt = $db->prepare("INSERT INTO grades (student_id, course_id, assignment_id, grade, feedback, graded_at) VALUES (?, ?, ?, ?, ?, NOW())");
+      $insert_stmt->execute([$student_id, $course_id, $assignment_id, $grade, $feedback]);
     }
   }
-  $message = "✅ Grade updated!";
+  $message = "✅ Grade and feedback updated!";
 }
 
 // Fetch submissions for instructor's courses
@@ -88,7 +89,7 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <div class="space-y-4">
         <?php foreach ($result as $row): ?>
           <div class="bg-white p-4 shadow rounded">
-            <h2 class="text-lg font-semibold"><?= htmlspecialchars($row['assignment_title']) ?> – <?= htmlspecialchars($row['course_title']) ?></h2>
+            <h2 class="text-lg font-semibold">Assignment: <?= htmlspecialchars($row['assignment_title']) ?> – <?= htmlspecialchars($row['course_title']) ?></h2>
             <p class="text-sm text-gray-600">Student: <?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></p>
             <p class="text-sm">Submitted: <?= $row['submitted_at'] ?></p>
             <?php
@@ -99,9 +100,10 @@ $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
             ?>
             <p class="text-sm"><a href="<?= htmlspecialchars($file_url) ?>" target="_blank" class="text-blue-500 underline">📎 View File</a></p>
 
-            <form method="POST" class="mt-2 flex items-center gap-2">
+            <form method="POST" class="mt-2 flex flex-col md:flex-row items-center gap-2">
               <input type="hidden" name="submission_id" value="<?= $row['id'] ?>">
               <input type="number" step="0.1" name="grade" placeholder="Grade" value="<?= $row['grade'] ?>" class="px-2 py-1 border rounded w-24">
+              <input type="text" name="feedback" placeholder="Feedback" class="px-2 py-1 border rounded w-64" value="<?= isset($row['feedback']) ? htmlspecialchars($row['feedback']) : '' ?>">
               <button type="submit" class="bg-green-600 text-white px-3 py-1 rounded">Save Grade</button>
             </form>
           </div>
