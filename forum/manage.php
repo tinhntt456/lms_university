@@ -1,0 +1,128 @@
+<?php
+// forum/manage.php
+session_start();
+if (!isset($_SESSION['user_id']) || ($_SESSION['role'] !== 'instructor' && $_SESSION['role'] !== 'admin')) {
+    header('Location: ../auth/login.php');
+    exit();
+}
+
+
+require_once '../config/database.php';
+$database = new Database();
+$db = $database->getConnection();
+include '../includes/instructor_navbar.php';
+include '../includes/instructor_sidebar.php';
+
+$user_id = $_SESSION['user_id'];
+$is_instructor = ($_SESSION['role'] === 'instructor');
+
+// Fetch courses taught by the instructor (if instructor)
+if ($is_instructor) {
+    $courses_sql = "SELECT id, title FROM courses WHERE instructor_id = ?";
+    $stmt = $db->prepare($courses_sql);
+    $stmt->execute([$user_id]);
+    $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $course_ids = array_column($courses, 'id');
+    $course_ids_str = implode(',', array_map('intval', $course_ids));
+    $where = $course_ids_str ? "WHERE fc.course_id IN ($course_ids_str)" : "WHERE 1=0";
+} else {
+    // admin can see all
+    $where = '';
+}
+
+// Fetch forum categories
+$categories_sql = "
+SELECT fc.*, c.title AS course_title
+FROM forum_categories fc
+JOIN courses c ON fc.course_id = c.id
+$where
+ORDER BY fc.created_at DESC
+";
+$categories_result = $db->query($categories_sql);
+$categories = $categories_result ? $categories_result->fetchAll(PDO::FETCH_ASSOC) : [];
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+<?php
+require_once '../includes/instructor_sidebar.php';
+require_once '../config/database.php';
+
+$db = (new Database())->getConnection();
+$sql = "SELECT fc.*, c.title AS course_title FROM forum_categories fc LEFT JOIN courses c ON fc.course_id = c.id ORDER BY fc.created_at DESC";
+$stmt = $db->prepare($sql);
+$stmt->execute();
+$categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$category_count = count($categories);
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum Category Management</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/dashboard.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <?php include '../includes/instructor_sidebar.php'; ?>
+            </nav>
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <div>
+                        <h1 class="h2 mb-0"><i class="fas fa-comments"></i> Forum Category Management</h1>
+                        <span class="text-muted">Total categories: <strong><?= $category_count ?></strong></span>
+                    </div>
+                    <a href="category_create.php" class="btn btn-primary"><i class="fas fa-plus"></i> Create New Category</a>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card shadow">
+                            <div class="card-header bg-info text-white">
+                                <i class="fas fa-list"></i> Forum Category List
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered align-middle">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Category Name</th>
+                                                <th>Description</th>
+                                                <th>Course</th>
+                                                <th>Created At</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php
+                                            if ($category_count > 0) {
+                                                foreach ($categories as $cat) {
+                                                    echo '<tr>';
+                                                    echo '<td>' . htmlspecialchars($cat['name']) . '</td>';
+                                                    echo '<td>' . htmlspecialchars($cat['description']) . '</td>';
+                                                    echo '<td>' . htmlspecialchars($cat['course_title']) . '</td>';
+                                                    echo '<td>' . htmlspecialchars(date('Y-m-d', strtotime($cat['created_at']))) . '</td>';
+                                                    echo '</tr>';
+                                                }
+                                            } else {
+                                                echo '<tr><td colspan="4" class="text-center"><div class="alert alert-warning d-flex align-items-center justify-content-center mb-0" role="alert"><i class="fas fa-info-circle me-2"></i> No categories found.</div></td></tr>';
+                                            }
+                                            ?>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+</html>
