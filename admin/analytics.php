@@ -11,6 +11,22 @@ $conn = $database->getConnection();
 $stmt = $conn->prepare("SELECT * FROM analytics ORDER BY recorded_at DESC LIMIT 10");
 $stmt->execute();
 $analytics = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Grading statistics
+$gradingStats = [];
+$stmt = $conn->prepare("SELECT COUNT(*) AS total_graded, AVG(grade) AS avg_grade, COUNT(DISTINCT student_id) AS students_graded FROM grades");
+$stmt->execute();
+$gradingStats = $stmt->fetch(PDO::FETCH_ASSOC);
+
+$courseGradingStats = [];
+$stmt = $conn->prepare("SELECT c.id, c.title AS course_name, COUNT(g.grade_id) AS total_graded, AVG(g.grade) AS avg_grade, COUNT(DISTINCT g.student_id) AS students_graded FROM courses c LEFT JOIN grades g ON c.id = g.course_id GROUP BY c.id, c.title");
+$stmt->execute();
+$courseGradingStats = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$instructorGradingStats = [];
+$stmt = $conn->prepare("SELECT i.id, CONCAT(i.first_name, ' ', i.last_name) AS instructor_name, COUNT(g.grade_id) AS total_graded, AVG(g.grade) AS avg_grade, COUNT(DISTINCT g.student_id) AS students_graded FROM users i LEFT JOIN courses c ON i.id = c.instructor_id LEFT JOIN grades g ON c.id = g.course_id WHERE i.role = 'instructor' GROUP BY i.id, instructor_name");
+$stmt->execute();
+$instructorGradingStats = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="vi">
@@ -70,6 +86,104 @@ $analytics = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                     </div>
                 </div>
+                    <!-- Grading Statistics -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card shadow">
+                                <div class="card-header bg-success text-white">
+                                    <i class="fas fa-marker"></i> Grading Statistics
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered table-hover align-middle mb-0">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th scope="col">Total Graded</th>
+                                                    <th scope="col">Average Grade</th>
+                                                    <th scope="col">Students Graded</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td><?= $gradingStats['total_graded'] ?? 0 ?></td>
+                                                    <td><?= isset($gradingStats['avg_grade']) ? number_format($gradingStats['avg_grade'], 2) : '0.00' ?></td>
+                                                    <td><?= $gradingStats['students_graded'] ?? 0 ?></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                                    <!-- Grading Statistics by Course -->
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <div class="card shadow">
+                                                <div class="card-header bg-info text-white">
+                                                    <i class="fas fa-book"></i> Grading Statistics by Course
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered table-hover align-middle mb-0">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th scope="col">Course Name</th>
+                                                                    <th scope="col">Total Graded</th>
+                                                                    <th scope="col">Average Grade</th>
+                                                                    <th scope="col">Students Graded</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <?php foreach ($courseGradingStats as $row): ?>
+                                                                    <tr>
+                                                                        <td><?= htmlspecialchars($row['course_name']) ?></td>
+                                                                        <td><?= $row['total_graded'] ?? 0 ?></td>
+                                                                        <td><?= isset($row['avg_grade']) ? number_format($row['avg_grade'], 2) : '0.00' ?></td>
+                                                                        <td><?= $row['students_graded'] ?? 0 ?></td>
+                                                                    </tr>
+                                                                <?php endforeach; ?>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Grading Statistics by Instructor -->
+                                    <div class="row mb-4">
+                                        <div class="col-12">
+                                            <div class="card shadow">
+                                                <div class="card-header bg-warning text-dark">
+                                                    <i class="fas fa-chalkboard-teacher"></i> Grading Statistics by Instructor
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="table-responsive">
+                                                        <table class="table table-bordered table-hover align-middle mb-0">
+                                                            <thead class="table-light">
+                                                                <tr>
+                                                                    <th scope="col">Instructor Name</th>
+                                                                    <th scope="col">Total Graded</th>
+                                                                    <th scope="col">Average Grade</th>
+                                                                    <th scope="col">Students Graded</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <?php foreach ($instructorGradingStats as $row): ?>
+                                                                    <tr>
+                                                                        <td><?= htmlspecialchars($row['instructor_name']) ?></td>
+                                                                        <td><?= $row['total_graded'] ?? 0 ?></td>
+                                                                        <td><?= isset($row['avg_grade']) ? number_format($row['avg_grade'], 2) : '0.00' ?></td>
+                                                                        <td><?= $row['students_graded'] ?? 0 ?></td>
+                                                                    </tr>
+                                                                <?php endforeach; ?>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
             </main>
         </div>
     </div>
