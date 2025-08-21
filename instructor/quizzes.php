@@ -85,7 +85,8 @@ $quizzes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                                             <div class="btn-group" role="group">
                                                                 <a href="view_quiz.php?id=<?= $quiz['id'] ?>" class="btn btn-sm btn-outline-primary" title="Xem"><i class="fas fa-eye"></i></a>
                                                                 <a href="edit_quiz.php?id=<?= $quiz['id'] ?>" class="btn btn-sm btn-outline-secondary" title="Sửa"><i class="fas fa-edit"></i></a>
-                                                                <a href="quiz_attempts.php?quiz_id=<?= $quiz['id'] ?>" class="btn btn-sm btn-outline-success" title="Lượt làm"><i class="fas fa-file-alt"></i></a>
+                                                                <a href="quiz_attempts.php?quiz_id=<?= $quiz['id'] ?>" class="btn btn-sm btn-outline-success" title="Attempts"><i class="fas fa-file-alt"></i></a>
+                                                                <a href="grade_quiz.php?quiz_id=<?= $quiz['id'] ?>" class="btn btn-sm btn-outline-info" title="Grade"><i class="fas fa-marker"></i></a>
                                                                 <a href="delete_quiz.php?id=<?= $quiz['id'] ?>" class="btn btn-sm btn-outline-danger" title="Xoá" onclick="return confirm('Are you sure you want to delete this quiz?');"><i class="fas fa-trash"></i></a>
                                                             </div>
                                                         </td>

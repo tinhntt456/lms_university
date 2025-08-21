@@ -21,18 +21,20 @@ if (isset($_POST['attempt_quiz_id'])) {
     if (!$check->fetch()) {
         $attempt = $db->prepare("INSERT INTO quiz_attempts (quiz_id, student_id, attempt_number, score, total_points) VALUES (?, ?, 1, 0, 20)");
         $attempt->execute([$quiz_id, $student_id]);
+    $_SESSION['quiz_in_progress'] = $quiz_id;
         header('Location: quizzes.php');
         exit();
     }
 }
 
 // Get quizzes using PDO
-$sql = "SELECT q.*, c.title AS course_title, qa.attempt_number, qa.score, qa.completed_at
+
+$sql = "SELECT q.*, c.title AS course_title, qa.attempt_number, qa.score, qa.completed_at, qa.feedback
         FROM enrollments e
         JOIN courses c ON e.course_id = c.id
         JOIN quizzes q ON q.course_id = c.id
         LEFT JOIN (
-            SELECT quiz_id, student_id, MAX(attempt_number) AS attempt_number, score, completed_at
+            SELECT quiz_id, student_id, MAX(attempt_number) AS attempt_number, score, completed_at, feedback
             FROM quiz_attempts
             WHERE student_id = ?
             GROUP BY quiz_id, student_id
@@ -42,6 +44,17 @@ $sql = "SELECT q.*, c.title AS course_title, qa.attempt_number, qa.score, qa.com
 $stmt = $db->prepare($sql);
 $stmt->execute([$student_id, $student_id, $student_id]);
 $quizzes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Handle quiz submission
+if (isset($_POST['submit_quiz_id'])) {
+    $quiz_id = intval($_POST['submit_quiz_id']);
+    $update = $db->prepare("UPDATE quiz_attempts SET completed_at = NOW() WHERE quiz_id = ? AND student_id = ?");
+    $update->execute([$quiz_id, $student_id]);
+    unset($_SESSION['quiz_in_progress']);
+    $_SESSION['quiz_submit_success'] = true;
+    header('Location: quizzes.php');
+    exit();
+}
 
 ?>
 
@@ -83,6 +96,10 @@ $quizzes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <i class="fas fa-question-circle"></i> My Quizzes
                     </h1>
                 </div>
+                    <?php if (!empty($_SESSION['quiz_submit_success'])): ?>
+                        <div class="alert alert-success">Submission successful!</div>
+                        <?php unset($_SESSION['quiz_submit_success']); ?>
+                    <?php endif; ?>
                 <table class="quizzes-table">
                     <thead>
                         <tr>
@@ -91,6 +108,7 @@ $quizzes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             <th>Due Date</th>
                             <th>Status</th>
                             <th>Score</th>
+                            <th>Feedback</th>
                             <th>Last Attempt</th>
                             <th>Action</th>
                         </tr>
@@ -105,17 +123,32 @@ $quizzes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <td class="<?= $q['completed_at'] ? 'status-completed' : 'status-not' ?>">
                                     <?= $q['completed_at'] ? 'Completed' : 'Not Attempted' ?>
                                 </td>
-                                <td><?= $q['score'] !== null ? htmlspecialchars($q['score']) : '-' ?></td>
+                                <td><?= ($q['score'] !== null && $q['feedback']) ? htmlspecialchars($q['score']) : '-' ?></td>
+                                <td><?= !empty($q['feedback']) ? htmlspecialchars($q['feedback']) : '-' ?></td>
                                 <td><?= $q['completed_at'] ? htmlspecialchars(date('Y-m-d H:i', strtotime($q['completed_at']))) : '-' ?></td>
                                 <td>
-                                    <?php if (!$q['completed_at']): ?>
-                                        <form method="post" style="display:inline;">
-                                            <input type="hidden" name="attempt_quiz_id" value="<?= $q['id'] ?>">
-                                            <button type="submit" class="btn btn-sm btn-warning"><i class="fas fa-play"></i> Attempt</button>
-                                        </form>
-                                    <?php else: ?>
-                                        <span class="text-success"><i class="fas fa-check"></i></span>
-                                    <?php endif; ?>
+                                        <?php
+                                        // If there is an attempt but not completed, show Submit button
+                                        if ($q['attempt_number'] && !$q['completed_at']) {
+                                            ?>
+                                            <form method="post" style="display:inline;">
+                                                <input type="hidden" name="submit_quiz_id" value="<?= $q['id'] ?>">
+                                                <button type="submit" class="btn btn-sm btn-success"><i class="fas fa-upload"></i> Submit</button>
+                                            </form>
+                                        <?php
+                                        } elseif (!$q['attempt_number']) {
+                                            ?>
+                                            <form method="post" style="display:inline;">
+                                                <input type="hidden" name="attempt_quiz_id" value="<?= $q['id'] ?>">
+                                                <button type="submit" class="btn btn-sm btn-warning"><i class="fas fa-play"></i> Start</button>
+                                            </form>
+                                        <?php
+                                        } else {
+                                            ?>
+                                            <span class="text-success"><i class="fas fa-check"></i></span>
+                                        <?php
+                                        }
+                                        ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
